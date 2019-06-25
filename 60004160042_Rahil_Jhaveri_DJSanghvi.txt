@@ -1,0 +1,84 @@
+dj 
+Big Data & Hadoop: Practical Test
+
+Sr. No. = 60004160042
+Name	= Rahil Jhaveri
+
+
+------------------------------------------------------------------------------------
+
+Question 1: HIVE
+Problem 1 
+Answer: 
+CREATE TABLE Sample_Ratios ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE AS 
+select EarningPerShare, 
+((NetSales-(PowerFuelCost + EmployeeCost))/NetSales) as Gross_Profit_Margin, 
+((ProfitBeforeTax-Tax)/NetSales) as Net_Profit_Margin,
+((ReportedNetProfit-TotalExpense)/TotalAssets) as Return_on_assets,
+(TotalCurrentAssets/CurrentLiabilities) as Current_ratio,
+((TotalCurrentAssets-Inventories)/CurrentLiabilities) as QuickRatio,
+(TotalDebt/TotalAssets) as DebtRatio,
+(TotalIncome/EquityShareCapital) as Return_on_Equity,
+((TotalCurrentAssets-Inventories)/Inventories) as Inventory_turn_ratio
+from pharma;
+
+Problem 2
+Answer:
+CREATE TABLE Current_Ratio ROW FORMAT DELIMITED FIELDS TEMINATED BY ',' STORED AS TEXTFILE AS select (TotalCurrentAssets/CurrentLiabilities) as CurrentRatio from pharma;
+
+Problem 3
+Answer: 
+CREATE TABLE Quick_Ratio ROW FORMAT DELIMITED FIELDS TEMINATED BY ',' STORED AS TEXTFILE AS select ((TotalCurrentAssets-Inventories)/CurrentLiabilities) as QuickRatio from pharma;
+
+Problem 4
+Answer:
+CREATE TABLE Debt_Ratio ROW FORMAT DELIMITED FIELDS TEMINATED BY ',' STORED AS TEXTFILE AS select (TotalDebt/TotalAssets) as DebtRatio from pharma;
+
+------------------------------------------------------------------------------------
+
+Question 2: Shell HDFS
+
+Problem 1. Copy a csv file named sample.csv in /home/vaibhav/datasets from local file system to hdfs in /warehouse/tmp
+Answer: hadoop fs -copyFromLocal /home/vaibhav/datasets/sample.csv /warehouse/tmp
+
+Problem 2. Make the replication factor of the same file sample.csv to 5
+Answer: hadoop fs -setrep -w 5 /warehouse/tmp/sample.csv
+
+Problem 3. Give the rights to sample.csv as follows:
+	a. (read + write + execute) for owner and (read + execute) for all others
+	b. (read + write + execute) for owner, (read + execute) for group, (execute) for others
+Answer: a) hadoop fs -chmod 755 /warehouse/tmp/sample.csv
+	b) hadoop fs -chmod 751 /warehouse/tmp/sample.csv
+
+Problem 4. Delete the folder named /warehouse in hdfs in one command
+Answer: hadoop fs -rm -r /warehouse
+
+
+------------------------------------------------------------------------------------
+
+Question 3: Sqoop
+
+Problem 1:
+Answer: sqoop import-all-tables --connect jdbc:mysql://localhost/wisdom_db --target-dir /user/jatant/wisdom_data --fields-terminated-by '\t' -m 1 --username root --password root;
+
+Problem 2:
+Answer: 
+> sqoop import --connect jdbc:mysql://localhost/wisdom_db --table server_log --target-dir /user/jayant/server_logs_by_country --fields-terminated-by '\t' -m 4 --username root --password root --split-by 'country' --hcatalog-storage-stanza 'stored as orc tblproperties("orc.compress"="SNAPPY");
+OR
+> sqoop import --connect jdbc:mysql://localhost/wisdom_db --table server_log --target-dir /user/jayant/server_logs_by_country --fields-terminated-by '\t' -m 4 --username root --password root --split-by 'country';
+>create external table sample (country varchar, ipaddress varchar) row format delimited stored as orcfile location '/user/jayant/server_logs_by_country';
+
+Problem 3:
+Answer:
+> sqoop import --connect jdbc:mysql://localhost/wisdom_db --table employees --target-dir /user/jayant/employeeData --fields-terminated-by '|' -m 1 --username root --password root --columns employeeNumber,lastName, firstName, email;
+
+
+Problem 4:
+> sqoop import --connect jdbc:mysql://localhost/wisdom_db --table server_log --target-dir /user/jayant/server_log_summary --fields-terminated-by ',' -m 1 --username root --password root --split-by 'country';
+
+Problem 5:
+Answer:
+> hadoop fs -put /home/jayant/Desktop/student.txt /user/jayant/sqoop_data
+> create table student(id int, name varchar(20), col3 int);
+> sqoop export --connect jdbc:mysql://localhost/wisdom_db --table student --export-dir /user/jayant/sqoop_data --fields-terminated-by '\t' -m 1 --username root --password root;
+
